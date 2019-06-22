@@ -8,7 +8,14 @@ For details about R-CNN please refer to the paper [Faster R-CNN: Towards Real-Ti
 
 1. Requirements for Tensorflow (see: [Tensorflow](https://www.tensorflow.org/))
 
-2. Python packages you might not have: `cython`, `python-opencv`, `easydict`
+2. Python packages you might not have: `cython`, `opencv-python`, `easydict`
+
+- tensorflow-gpu==1.8.0
+- python==3.6
+- numpy==1.16.2
+- CUDA==9.0
+- cuDNN==7.3
+
 
 ### Requirements: hardware
 
@@ -19,7 +26,7 @@ For details about R-CNN please refer to the paper [Faster R-CNN: Towards Real-Ti
 1. Clone the Faster R-CNN repository
   ```Shell
   # Make sure to clone with --recursive
-  git clone --recursive https://github.com/smallcorgi/Faster-RCNN_TF.git
+  git clone --recursive https://github.com/nicklinyi/Faster-RCNN_TF.git
   ```
 
 2. Build the Cython modules
@@ -116,7 +123,7 @@ The demo performs detection using a VGG16 network trained for detection on PASCA
 | mAP        | 0.681 |
 
 
-###References
+### References
 [Faster R-CNN caffe version](https://github.com/rbgirshick/py-faster-rcnn)
 
 [A tensorflow implementation of SubCNN (working progress)](https://github.com/yuxng/SubCNN_TF)
