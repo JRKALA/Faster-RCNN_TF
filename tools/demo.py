@@ -74,13 +74,13 @@ def demo(sess, net, image_name):
     # boxes.shape
     # (232, 84), 84 = 21 * 4, every class has it own box coord.
 
-    f = open('scores'+image_name+'.npy','wb')
-    pickle.dump(scores,f)
-    f.close()
+    # f = open('scores'+image_name+'.npy','wb')
+    # pickle.dump(scores,f)
+    # f.close()
  
-    f = open('boxes'+image_name+'.npy','wb')
-    pickle.dump(boxes,f)
-    f.close()   
+    # f = open('boxes'+image_name+'.npy','wb')
+    # pickle.dump(boxes,f)
+    # f.close()   
     # Visualize detections for each class
     im = im[:, :, (2, 1, 0)]
     fig, ax = plt.subplots(figsize=(12, 12))
