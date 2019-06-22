@@ -1,3 +1,4 @@
+# -*- coding:utf-8 -*-
 import _init_paths
 import tensorflow as tf
 from fast_rcnn.config import cfg
@@ -8,6 +9,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import os, sys, cv2
 import argparse
+import pickle
 from networks.factory import get_network
 
 
@@ -65,8 +67,20 @@ def demo(sess, net, image_name):
     scores, boxes = im_detect(sess, net, im)
     timer.toc()
     print ('Detection took {:.3f}s for '
-           '{:d} object proposals').format(timer.total_time, boxes.shape[0])
+           '{:d} object proposals'.format(timer.total_time, boxes.shape[0]))
+    
+    # scores.shape
+    # (232, 21), 21 is the number of classes
+    # boxes.shape
+    # (232, 84), 84 = 21 * 4, every class has it own box coord.
 
+    f = open('scores'+image_name+'.npy','wb')
+    pickle.dump(scores,f)
+    f.close()
+ 
+    f = open('boxes'+image_name+'.npy','wb')
+    pickle.dump(boxes,f)
+    f.close()   
     # Visualize detections for each class
     im = im[:, :, (2, 1, 0)]
     fig, ax = plt.subplots(figsize=(12, 12))
@@ -88,7 +102,7 @@ def parse_args():
     """Parse input arguments."""
     parser = argparse.ArgumentParser(description='Faster R-CNN demo')
     parser.add_argument('--gpu', dest='gpu_id', help='GPU device id to use [0]',
-                        default=0, type=int)
+                        default=4, type=int)
     parser.add_argument('--cpu', dest='cpu_mode',
                         help='Use CPU mode (overrides --gpu)',
                         action='store_true')
@@ -100,6 +114,7 @@ def parse_args():
     args = parser.parse_args()
 
     return args
+
 if __name__ == '__main__':
     cfg.TEST.HAS_RPN = True  # Use RPN for proposals
 
@@ -118,11 +133,11 @@ if __name__ == '__main__':
    
     #sess.run(tf.initialize_all_variables())
 
-    print '\n\nLoaded network {:s}'.format(args.model)
+    print('Loaded network {}'.format(args.model))
 
     # Warmup on a dummy image
     im = 128 * np.ones((300, 300, 3), dtype=np.uint8)
-    for i in xrange(2):
+    for i in range(2):
         _, _= im_detect(sess, net, im)
 
     im_names = ['000456.jpg', '000542.jpg', '001150.jpg',
@@ -130,8 +145,8 @@ if __name__ == '__main__':
 
 
     for im_name in im_names:
-        print '~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~'
-        print 'Demo for data/demo/{}'.format(im_name)
+        print ('~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~')
+        print ('Demo for data/demo/{}'.format(im_name))
         demo(sess, net, im_name)
 
     plt.show()

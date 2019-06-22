@@ -3,14 +3,15 @@
 # --------------------------------------------------------
 # Fast R-CNN
 # Copyright (c) 2015 Microsoft
+# Copyright (c) 2019 
 # Licensed under The MIT License [see LICENSE for details]
-# Written by Ross Girshick
+# Written by Ross Girshick and Yi Lin
 # --------------------------------------------------------
 
 """Test a Fast R-CNN network on an image database."""
 
 import _init_paths
-from fast_rcnn.test_net_yl import test_net
+from fast_rcnn.test import test_net
 from fast_rcnn.config import cfg, cfg_from_file
 from datasets.factory import get_imdb
 from networks.factory import get_network
@@ -31,8 +32,8 @@ def parse_args():
     parser.add_argument('--def', dest='prototxt',
                         help='prototxt file defining the network',
                         default=None, type=str)
-    parser.add_argument('--weights', dest='model',
-                        help='model to test',
+    parser.add_argument('--weights', dest='checkpoint',
+                        help='use the checkpoint model to test',
                         default=None, type=str)
     parser.add_argument('--cfg', dest='cfg_file',
                         help='optional config file', default=None, type=str)
@@ -67,11 +68,11 @@ if __name__ == '__main__':
     print('Using config:')
     pprint.pprint(cfg)
 
-    while not os.path.exists(args.model) and args.wait:
-        print(('Waiting for {} to exist...'.format(args.model)))
+    while not os.path.exists(args.checkpoint) and args.wait:
+        print(('Waiting for {} to exist...'.format(args.checkpoint)))
         time.sleep(10)
 
-    weights_filename = os.path.splitext(os.path.basename(args.model))[0]
+    weights_filename = os.path.splitext(os.path.basename(args.checkpoint))[0]
 
     imdb = get_imdb(args.imdb_name)
     imdb.competition_mode(args.comp_mode)
@@ -91,7 +92,10 @@ if __name__ == '__main__':
     # start a session
     saver = tf.train.Saver()
     sess = tf.Session(config=tf.ConfigProto(allow_soft_placement=True))
-    saver.restore(sess, args.model)
-    print(('Loading model weights from {:s}').format(args.model))
+    ckpt = tf.train.get_checkpoint_state(os.path.dirname(args.checkpoint))
+    print(ckpt)
+    if ckpt and ckpt.model_checkpoint_path:
+        saver.restore(sess, ckpt.model_checkpoint_path)
+        print(('Loading checkpoint weights from {:s}').format(args.checkpoint))
 
     test_net(sess, network, imdb, weights_filename)
